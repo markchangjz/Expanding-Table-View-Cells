@@ -17,6 +17,7 @@ struct cellData {
 class TableViewController: UITableViewController {
     
     var tableViewData = [cellData]()
+    var lastOpenedSection = 0
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -58,21 +59,30 @@ class TableViewController: UITableViewController {
             guard let cell = tableView.dequeueReusableCell(withIdentifier: "cell") else {
                 return UITableViewCell()
             }
-            cell.textLabel?.text = tableViewData[indexPath.section].sectionData[dataIndex]
+            cell.textLabel?.text = "      " + tableViewData[indexPath.section].sectionData[dataIndex]
             return cell
         }
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0 {
+            
+            if indexPath.section != lastOpenedSection {
+                tableViewData[lastOpenedSection].opened = false
+                let sections = IndexSet.init(integer: lastOpenedSection)
+                tableView.reloadSections(sections, with: .fade)
+            }
+            
             if tableViewData[indexPath.section].opened == true {
                 tableViewData[indexPath.section].opened = false
                 let sections = IndexSet.init(integer: indexPath.section)
-                tableView.reloadSections(sections, with: .none)
+                tableView.reloadSections(sections, with: .fade)
             } else {
                 tableViewData[indexPath.section].opened = true
                 let sections = IndexSet.init(integer: indexPath.section)
-                tableView.reloadSections(sections, with: .none)
+                tableView.reloadSections(sections, with: .fade)
+                
+                lastOpenedSection = indexPath.section
             }
             print("Tapped at \(tableViewData[indexPath.section].title)")
         } else {
